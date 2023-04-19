@@ -21,6 +21,10 @@ class HandleFile
             while (($line = fgets($handle)) !== false) {
                 $data = json_decode($line);
 
+                if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+                    throw new \Exception("Input file is incorrect");
+                }
+
                 $result = $this->calculateCommission->calculate($data);
 
                 print "$result\n";

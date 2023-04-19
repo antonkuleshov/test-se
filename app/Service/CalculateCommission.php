@@ -35,7 +35,9 @@ class CalculateCommission
             $amntFixed = $data->amount / $rate;
         }
 
-        return $amntFixed * ($isEu ? 0.01 : 0.02);
+        $commission = $amntFixed * ($isEu ? 0.01 : 0.02);
+
+        return number_format($commission, 2, '.', '');
     }
 
     public function isContainToEu(string $countryShortName): bool
