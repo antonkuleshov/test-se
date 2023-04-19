@@ -2,6 +2,7 @@
 
 namespace Command;
 
+use GuzzleHttp\Exception\GuzzleException;
 use Service\CalculateCommission;
 
 class HandleFile
@@ -10,6 +11,9 @@ class HandleFile
     {
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function parse(string $filePath): void
     {
         $handle = fopen($filePath, "r");
