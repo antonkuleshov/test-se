@@ -3,10 +3,13 @@
 namespace Tests\Service;
 
 use Dotenv\Dotenv;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Service\BinList;
 use Service\CalculateCommission;
 use Service\Rates;
+use Tests\Mock\BinListMock;
+use Tests\Mock\RatesMock;
 
 class CalculateCommissionTest extends TestCase
 {
@@ -16,15 +19,14 @@ class CalculateCommissionTest extends TestCase
 
     public function setUp(): void
     {
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
-        $dotenv->load();
+        $binListBody = file_get_contents(dirname(__DIR__, 1) . '/Mock/binlist.txt');
+        $ratesBody = file_get_contents(dirname(__DIR__, 1) . '/Mock/rates.txt');
 
-        $apiLayerApiKey = $_ENV['API_LAYER_APIKEY'];
-        $lookupBinList = $_ENV['LOOKUP_BINLIST'];
-        $exchangeRatesApi = $_ENV['EXCHANGE_RATES_API'];
+        $binListMock = new BinListMock();
+        $ratesMock = new RatesMock();
 
-        $this->binList = new BinList($apiLayerApiKey, $lookupBinList);
-        $this->rates = new Rates($apiLayerApiKey, $exchangeRatesApi);
+        $this->binList = $binListMock->getBinList(200, $binListBody);
+        $this->rates = $ratesMock->getRates(200, $ratesBody);
         $this->data = json_decode('{"bin":"45717360","amount":"100.00","currency":"EUR"}');
     }
 
@@ -36,6 +38,9 @@ class CalculateCommissionTest extends TestCase
         $this->assertNotTrue($calculateCommission->isContainToEu('AV'));
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testCalculate(): void
     {
         $calculateCommission = new CalculateCommission($this->binList, $this->rates);

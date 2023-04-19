@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+    php:
+        build: ./
+        container_name: test-se
+        ports:
+          - 8009:80
